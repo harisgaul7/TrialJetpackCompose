@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">TrialJetpackCompose</string>
+    <string name="title_sign_in">Sign in to Figma</string>
+    <string name="title_continue">Continue</string>
+    <string name="title_login">Login</string>
+    <string name="title_qris">Pembayaran QR</string>
+    <string name="title_top_up">Top Up E-Wallet</string>
+    <string name="title_bni">BNI</string>
+    <string name="title_other_menu">Menu Lain</string>
+    <string name="title_warning">Waspada</string>
+    <string name="title_user_id">User ID</string>
+    <string name="sign_in_create_account">Sign in or create an account</string>
+</resources>
