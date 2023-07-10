@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
@@ -55,13 +56,13 @@ fun TextFieldWithLabel(
         Text(
             text = labelTextField,
             modifier = Modifier
-                .fillMaxWidth(0.8f)
+                .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
-            color = Gray,
+            color = Color(0xFF6B6A6A),
             style = TextStyle(
                 fontFamily = MontserratFontFamily,
                 fontWeight = FontWeight.Medium,
-                fontSize = 14.sp,
+                fontSize = 12.sp,
                 lineHeight = 24.sp,
                 letterSpacing = 0.15.sp,
             )
@@ -73,7 +74,7 @@ fun TextFieldWithLabel(
                 valueEdit.value = it
             },
             modifier = Modifier
-                .fillMaxWidth(0.8f)
+                .fillMaxWidth()
                 .height(50.dp)
                 .indicatorLine(
                     enabled = true,

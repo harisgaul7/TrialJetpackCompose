@@ -1,18 +1,19 @@
 package com.mountainbb.trialjetpackcompose.welcome
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -24,10 +25,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumTouchTargetEnforcement
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,13 +53,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.mountainbb.trialjetpackcompose.R
 import com.mountainbb.trialjetpackcompose.component.TextFieldWithLabel
 import com.mountainbb.trialjetpackcompose.ui.theme.MontserratFontFamily
@@ -474,7 +481,9 @@ fun WelcomeScreen (
             )
 
             if (popupStatus) {
-                PopupWindowDialog()
+                CustomAlertDialog(onDismiss = { /*TODO*/ }) {
+                    
+                }
             }
         }
     }
@@ -484,183 +493,192 @@ fun WelcomeScreen (
 @Composable
 fun LoginScreenPreview() {
     TrialJetpackComposeTheme {
-        WelcomeScreen({})
-    }
-}
-
-@Composable
-fun CallPopUp() {
-    Popup(alignment = Alignment.Center) {
-        Column(
-            modifier = Modifier
-                .width(300.dp)
-                .height(300.dp)
-                .background(Color.Gray)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.clear_gray),
-                modifier = Modifier
-                    .fillMaxWidth(0.2f)
-                    .padding(5.dp)
-                    .align(Alignment.CenterHorizontally),
-                contentDescription = null
-            )
-            Image(
-                painter = painterResource(id = R.drawable.clear_gray),
-                modifier = Modifier
-                    .fillMaxWidth(0.2f)
-                    .padding(5.dp)
-                    .align(Alignment.CenterHorizontally),
-                contentDescription = null
-            )
-            Image(
-                painter = painterResource(id = R.drawable.clear_gray),
-                modifier = Modifier
-                    .fillMaxWidth(0.2f)
-                    .padding(5.dp)
-                    .align(Alignment.CenterHorizontally),
-                contentDescription = null
-            )
-
-//            TextFieldWithLabel(
-//                labelTextField = stringResource(id = R.string.title_user_id),
-//                placeHolder = "userIdData"
-//            )
-//
-//            TextFieldWithLabel(
-//                labelTextField = stringResource(id = R.string.title_user_id),
-//                placeHolder = "userIdData1"
-//            )
-//
-//            TextFieldWithLabel(
-//                labelTextField = stringResource(id = R.string.title_user_id),
-//                placeHolder = "userIdData2"
-//            )
+        CustomAlertDialog(onDismiss = { /*TODO*/ }) {
+            
         }
     }
 }
 
-
-// on below line we are creating a pop up window dialog method
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PopupWindowDialog() {
-    // on below line we are creating variable for button title
-    // and open dialog.
-    val openDialog = remember { mutableStateOf(false) }
-    val buttonTitle = remember {
-        mutableStateOf("Show Pop Up")
-    }
-
-    // on the below line we are creating a column
-    Column(
-
-        // in this column we are specifying
-        // modifier to add padding and fill
-        // max size
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp),
-
-        // on below line we are adding horizontal alignment
-        // and vertical arrangement
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+fun CustomAlertDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
+    Dialog(onDismissRequest = { onDismiss() }, properties = DialogProperties(
+        dismissOnBackPress = false,dismissOnClickOutside = false
+    )
     ) {
-
-        // on the below line we are creating a button
-        Button(
-
-            // on below line we are adding modifier.
-            // and padding to it,
+        Card(
+            //shape = MaterialTheme.shapes.medium,
+            shape = RoundedCornerShape(10.dp),
+            // modifier = modifier.size(280.dp, 240.dp)
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-
-            // on below line we are adding
-            // on click to our button
-            onClick = {
-
-                // on below line we are updating
-                // boolean value of open dialog.
-                openDialog.value = !openDialog.value
-
-                // on below line we are checking if dialog is close
-                if (!openDialog.value) {
-
-                    // on below line we are updating value
-                    buttonTitle.value = "Show Pop Up"
-                }
-            }
+                .fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(8.dp)
         ) {
-
-            // on the below line we are creating a text for our button.
-            Text(text = buttonTitle.value, modifier = Modifier.padding(3.dp))
-        }
-
-        // on below line we are creating a box to display box.
-        Box {
-            // on below line we are specifying height and width
-            val popupWidth = 300.dp
-            val popupHeight = 300.dp
-
-            // on below line we are checking if dialog is open
-            if (openDialog.value) {
-                // on below line we are updating button
-                // title value.
-                buttonTitle.value = "Hide Pop Up"
-                // on below line we are adding pop up
-                Popup(
-                    // on below line we are adding
-                    // alignment and properties.
-                    alignment = Alignment.TopCenter,
-                    properties = PopupProperties()
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.7f)
+                    .background(Color.White)
+            ) {
+                Column(
+                    Modifier
+                        .fillMaxWidth(0.84f)
+                        .align(Alignment.CenterHorizontally)
                 ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.clear_gray),
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(top = 10.dp)
+                            .width(15.dp),
+                        contentDescription = null
+                    )
 
-                    // on the below line we are creating a box.
-                    Box(
-                        // adding modifier to it.
-                        Modifier
-                            .size(popupWidth, popupHeight)
-                            .padding(top = 5.dp)
-                            // on below line we are adding background color
-                            .background(
-                                Color.Green,
-                                RoundedCornerShape(10.dp)
-                            )
-                            // on below line we are adding border.
-                            .border(1.dp, color = Color.Black, RoundedCornerShape(10.dp))
+                    Text(
+                        text = stringResource(id = R.string.title_welcome),
+                        style = TextStyle(
+                            fontFamily = MontserratFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp,
+                            letterSpacing = 0.15.sp,
+                        ),
+                        modifier = Modifier
+                            .padding(top = 30.dp, bottom = 28.dp),
+                        color = Color(0xFF6B6A6A)
+                    )
+
+                    TextFieldWithLabel(
+                        labelTextField = stringResource(id = R.string.title_user_id),
+                        placeHolder = "*****ama"
+                    )
+
+                    Spacer(modifier = Modifier.size(5.dp))
+
+                    TextFieldWithLabel(
+                        labelTextField = stringResource(id = R.string.title_mpin),
+                        placeHolder = "MPIN"
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .padding(top = 5.dp, bottom = 20.dp),
                     ) {
-
-                        // on below line we are adding column
-                        Column(
-                            // on below line we are adding modifier to it.
+                        CustomCheckbox(
+                            checked = true,
+                            onCheckedChange = { },
                             modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 20.dp),
-                            // on below line we are adding horizontal and vertical
-                            // arrangement to it.
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            // on below line we are adding text for our pop up
-                            TextFieldWithLabel(
-                                labelTextField = stringResource(id = R.string.title_user_id),
-                                placeHolder = "userIdData"
-                            )
-                            Text(
-                                // on below line we are specifying text
-                                text = "Welcome to Geeks for Geeks",
-                                // on below line we are specifying color.
-                                color = Color.White,
-                                // on below line we are adding padding to it
-                                modifier = Modifier.padding(vertical = 5.dp),
-                                // on below line we are adding font size.
-                                fontSize = 16.sp
-                            )
-                        }
+                                .padding(end = 10.dp)
+                        )
+
+//                        CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+//                            Checkbox(
+//                                checked = true,
+//                                onCheckedChange = { },
+//                                modifier = Modifier
+//                                    .padding(end = 10.dp),
+//                                colors = CheckboxDefaults.colors(Color.Black)
+//                            )
+//                        }
+
+                        Text(
+                            text = stringResource(id = R.string.title_save_user_id),
+                            style = TextStyle(
+                                fontFamily = MontserratFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                                letterSpacing = 0.15.sp,
+                            ),
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically),
+                            color = Color.Black
+                        )
                     }
                 }
+
+                Row(
+                    modifier = Modifier
+                        .padding(bottom = 5.dp)
+                        .fillMaxWidth(0.84f)
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.title_forgot_user_id),
+                        style = TextStyle(
+                            fontFamily = MontserratFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            letterSpacing = 0.15.sp,
+                            textDecoration = TextDecoration.Underline
+                        ),
+                        color = Color(0xFF33C3D6)
+                    )
+
+                    Spacer(
+                        modifier = Modifier
+                            .weight(1F)
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.title_forgot_mpin),
+                        style = TextStyle(
+                            fontFamily = MontserratFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            letterSpacing = 0.15.sp,
+                            textDecoration = TextDecoration.Underline
+                        ),
+                        color = Color(0xFF33C3D6)
+                    )
+                }
+
+                Button(
+                    onClick = {},
+                    modifier = Modifier
+                        .fillMaxWidth(0.84F)
+                        .padding(top = 15.dp, bottom = 3.dp)
+                        .height(48.dp)
+                        .align(Alignment.CenterHorizontally),
+                    shape = RoundedCornerShape(5.dp),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF33C3D6))
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.title_login),
+                        style = TextStyle(
+                            fontFamily = MontserratFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            letterSpacing = 0.25.sp,
+                        ),
+                        color = Color.White,
+                    )
+                }
             }
+        }
+    }
+}
+
+@Composable
+fun CustomCheckbox(
+    modifier: Modifier,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    IconButton(modifier = modifier, onClick = { onCheckedChange(!checked) }) {
+        //the box image frame unchecked
+        Image(
+            painter = painterResource(id = R.drawable.checkbox_off),
+            contentDescription = "Unchecked"
+        )
+        AnimatedVisibility(
+            modifier = modifier,
+            visible = checked,
+            exit = shrinkOut(shrinkTowards = Alignment.TopStart) + fadeOut()
+        ) {
+            //the check only (without the surrounding box)
+            Image(
+                painter = painterResource(id = R.drawable.checkbox_on),
+                contentDescription = "Checked"
+            )
         }
     }
 }
