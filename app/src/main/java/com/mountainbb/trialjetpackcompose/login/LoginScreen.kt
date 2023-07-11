@@ -133,14 +133,14 @@ fun CustomAlertDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
 
                     TextFieldWithLabel(
                         labelTextField = stringResource(id = R.string.title_user_id),
-                        placeHolder = "*****ama"
+                        value = "*****ama"
                     )
 
                     Spacer(modifier = Modifier.size(5.dp))
 
                     TextFieldWithLabel(
                         labelTextField = stringResource(id = R.string.title_mpin),
-                        placeHolder = "MPIN"
+                        value = "MPIN"
                     )
 
                 }
