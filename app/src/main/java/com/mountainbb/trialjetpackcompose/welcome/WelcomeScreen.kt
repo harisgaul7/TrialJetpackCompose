@@ -2,19 +2,16 @@ package com.mountainbb.trialjetpackcompose.welcome
 
 import android.graphics.Rect
 import android.view.ViewTreeObserver
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -55,17 +52,13 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Red
-import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -77,7 +70,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -582,6 +577,8 @@ fun DatePickerDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
                     .fillMaxHeight(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                val coroutineScope = rememberCoroutineScope()
+                val state = rememberLazyListState()
                 var choosenDate by remember { mutableStateOf("12 Januari 2023") }
                 Text(
                     text = stringResource(id = R.string.title_choose_date),
@@ -617,34 +614,6 @@ fun DatePickerDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
                         .padding(top = 10.dp)
                         .height(210.dp)
                 ) {
-                    val coroutineScope = rememberCoroutineScope()
-                    val state = rememberLazyListState()
-                    val fullyVisibleIndices: List<Int> by remember {
-                        derivedStateOf {
-                            val layoutInfo = state.layoutInfo
-                            val visibleItemsInfo = layoutInfo.visibleItemsInfo
-                            if (visibleItemsInfo.isEmpty()) {
-                                emptyList()
-                            } else {
-                                val fullyVisibleItemsInfo = visibleItemsInfo.toMutableList()
-
-                                val lastItem = fullyVisibleItemsInfo.last()
-
-                                val viewportHeight = layoutInfo.viewportEndOffset + layoutInfo.viewportStartOffset
-
-                                if (lastItem.offset + lastItem.size > viewportHeight) {
-                                    fullyVisibleItemsInfo.removeLast()
-                                }
-
-                                val firstItemIfLeft = fullyVisibleItemsInfo.firstOrNull()
-                                if (firstItemIfLeft != null && firstItemIfLeft.offset < layoutInfo.viewportStartOffset) {
-                                    fullyVisibleItemsInfo.removeFirst()
-                                }
-
-                                fullyVisibleItemsInfo.map { it.index }
-                            }
-                        }
-                    }
                     var textSize = 20.sp
                     var padding = 10.dp
                     var handlePadding = 10.dp
@@ -654,56 +623,28 @@ fun DatePickerDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
                     val dateScrollConnection = remember {
                         object : NestedScrollConnection {
                             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                                val delta = available.y
-//                                if (fullyVisibleIndices.size == 3) {
-//                                    choosenDate = fullyVisibleIndices.get(2).toString()
-//                                }
-//                                else if (fullyVisibleIndices.size == 4 && delta > 0) {
-//                                    choosenDate = fullyVisibleIndices.get(3).toString()
-//                                }
-//                                else if (fullyVisibleIndices.size == 4 && delta > 0) {
-//                                    choosenDate = fullyVisibleIndices.get(2).toString()
-//                                }
-//                                else if (fullyVisibleIndices.size == 5 && delta > 0) {
-//                                    choosenDate = fullyVisibleIndices.get(3).toString()
-//                                }
-
-//                                choosenDate = state.firstVisibleItemIndex.toString()
-                                if (state.firstVisibleItemScrollOffset > 50 && delta > 0) {
-                                    choosenDate = state.firstVisibleItemScrollOffset.toString() +
-                                            " = index = "+(state.firstVisibleItemIndex+3).toString()+
-                                            " = isiList = "+fullyVisibleIndices.get(3).toString()
-                                    coroutineScope.launch {
-                                        state.animateScrollToItem(state.firstVisibleItemIndex+3)
-                                    }
-                                }
-                                else if (state.firstVisibleItemScrollOffset > 50 && delta < 0) {
-                                    choosenDate = state.firstVisibleItemScrollOffset.toString() +
-                                            " = index = "+(state.firstVisibleItemIndex+4).toString()+
-                                            " = isiList = "+fullyVisibleIndices.get(3).toString()
-                                    coroutineScope.launch {
-                                        state.animateScrollToItem(state.firstVisibleItemIndex+4)
-                                    }
-                                }
-//                                else {
-//                                    choosenDate = state.firstVisibleItemScrollOffset.toString() +
-//                                            " = index = "+(state.firstVisibleItemIndex+3).toString()+
-//                                            " = delta = "+delta
-//                                }
-//                                choosenDate = delta.toString() // atas minus, bawah plus
-                                // called when you scroll the content
                                 dateFocused = true
                                 monthFocused = false
                                 yearFocused = false
                                 return Offset.Zero
+                            }
+
+                            override fun onPostScroll(
+                                consumed: Offset,
+                                available: Offset,
+                                source: NestedScrollSource
+                            ): Offset {
+
+                                coroutineScope.launch {
+                                    state.animateScrollToItem(22, 0)
+                                }
+                                return super.onPostScroll(consumed, available, source)
                             }
                         }
                     }
                     val monthScrollConnection = remember {
                         object : NestedScrollConnection {
                             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                                val delta = available.y
-                                // called when you scroll the content
                                 dateFocused = false
                                 monthFocused = true
                                 yearFocused = false
@@ -714,8 +655,6 @@ fun DatePickerDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
                     val yearScrollConnection = remember {
                         object : NestedScrollConnection {
                             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                                val delta = available.y
-                                // called when you scroll the content
                                 dateFocused = false
                                 monthFocused = false
                                 yearFocused = true
@@ -728,7 +667,6 @@ fun DatePickerDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
                         override suspend fun ScrollScope.performFling(
                             initialVelocity: Float
                         ): Float {
-                            val adjustedVelocity = initialVelocity * 0.1f
                             return 0f
                         }
                     }
@@ -741,12 +679,6 @@ fun DatePickerDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
                         flingBehavior = stopFling
                     ) {
                         itemsIndexed(date) { index, item ->
-                            val isVisible by remember(index) {
-                                derivedStateOf {
-                                    fullyVisibleIndices.contains(index)
-                                }
-                            }
-
                             val findMiddleItem by remember(index) {
                                 derivedStateOf {
                                     val layoutInfo = state.layoutInfo
@@ -806,29 +738,19 @@ fun DatePickerDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
                         }
                     }
 
-                    LazyColumn (
+                    val yearState = rememberLazyListState()
+                    callLazyColumn(
                         modifier = Modifier
                             .weight(0.3f)
-                            .nestedScroll(yearScrollConnection)
-                    ) {
-                        itemsIndexed(year) { index, item ->
-                            Text(
-                                text = item,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = handlePadding, top = padding, bottom = padding),
-                                color = handleColor(yearFocused),
-                                style = TextStyle(
-                                    fontFamily = MontserratFontFamily,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = textSize,
-                                    lineHeight = 24.sp,
-                                    letterSpacing = 0.15.sp,
-                                    textAlign = TextAlign.Start
-                                )
-                            )
-                        }
-                    }
+                            .nestedScroll(yearScrollConnection),
+                        dataList = year,
+                        color = handleColor(yearFocused),
+                        padding = padding,
+                        textSize = textSize,
+                        align = TextAlign.Start,
+                        state = yearState
+                    )
+
                 }
                 Row(
                     modifier = Modifier
@@ -856,6 +778,76 @@ fun DatePickerDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
             }
         }
     }
+}
+
+@Composable
+fun callLazyColumn(modifier: Modifier, dataList: List<String>, color: Color, padding: Dp,
+                   textSize: TextUnit, align: TextAlign, state: LazyListState) {
+
+    val stopFling = object : FlingBehavior {
+        override suspend fun ScrollScope.performFling(
+            initialVelocity: Float
+        ): Float {
+            return 0f
+        }
+    }
+
+    LazyColumn (
+        modifier = modifier,
+        flingBehavior = stopFling,
+        state = state
+    ) {
+        var handlePaddingss = 10.dp
+        itemsIndexed(dataList) { index, item ->
+            val findMiddleItem by remember(index+8) {
+                derivedStateOf {
+                    val layoutInfo = state.layoutInfo
+                    val visibleItemInfo = layoutInfo.visibleItemsInfo
+                    val itemInfo = visibleItemInfo.firstOrNull { it.index == index }
+
+                    itemInfo?.let {
+                        val delta = it.size/2
+                        val center = state.layoutInfo.viewportEndOffset / 2
+                        val childCenter = it.offset + it.size / 2
+                        val target = childCenter - center
+                        if (target in -delta..delta) return@derivedStateOf index
+                    }
+                }
+            }
+
+            if (index == 3) {
+                handlePaddingss = 20.dp
+            }
+            else if (index == 4) {
+                handlePaddingss = 30.dp
+            }
+            else if (index == 5) {
+                handlePaddingss = 40.dp
+            }
+            Text(
+                text = item,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = handlePaddingss, top = padding, bottom = padding),
+                color = color,
+                style = TextStyle(
+                    fontFamily = MontserratFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = textSize,
+                    lineHeight = 24.sp,
+                    letterSpacing = 0.15.sp,
+                    textAlign = align
+                )
+            )
+        }
+    }
+}
+
+fun paddingMiddleItem(middle: Int, index: Int): Dp {
+    if (middle == index) {
+        return 16.dp
+    }
+    return 30.dp
 }
 
 fun handleColor(isFocus: Boolean): Color {
