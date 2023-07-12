@@ -9,6 +9,7 @@
     <string name="title_other_menu">Menu Lain</string>
     <string name="title_warning">Waspada</string>
     <string name="title_welcome">Selamat datang kembali,</string>
+    <string name="title_choose_date">Tanggal yang dipilih:</string>
     <string name="title_user_id">User ID</string>
     <string name="title_mpin">MPIN</string>
     <string name="title_save_user_id">Simpan User ID</string>

@@ -2,14 +2,19 @@ package com.mountainbb.trialjetpackcompose.welcome
 
 import android.graphics.Rect
 import android.view.ViewTreeObserver
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,39 +28,44 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalMinimumTouchTargetEnforcement
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -63,14 +73,11 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -83,6 +90,7 @@ import com.mountainbb.trialjetpackcompose.ui.theme.SeptimusFontFamily
 import com.mountainbb.trialjetpackcompose.ui.theme.TrialJetpackComposeTheme
 import com.mountainbb.trialjetpackcompose.util.supportWideScreen
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
@@ -531,15 +539,15 @@ fun DatePickerDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
         )
     ) {
         Column(
-            Modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.5f)
+                .fillMaxHeight(0.69f)
                 .background(Color(0xFFEAF1F1), shape = RoundedCornerShape(15.dp))
         ) {
             val date = listOf(
-                "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
+                "","","1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
                 "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29",
-                "30", "31"
+                "30", "31", "", ""
             )
             val month = listOf(
                 "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus",
@@ -574,27 +582,288 @@ fun DatePickerDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
                     .fillMaxHeight(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                var choosenDate by remember { mutableStateOf("12 Januari 2023") }
                 Text(
-                    text = stringResource(id = R.string.title_welcome),
+                    text = stringResource(id = R.string.title_choose_date),
                     style = TextStyle(
                         fontFamily = MontserratFontFamily,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Light,
                         fontSize = 18.sp,
-                        letterSpacing = 0.15.sp,
                     ),
                     modifier = Modifier
-                        .padding(top = 30.dp, bottom = 28.dp),
-                    color = Color(0xFF6B6A6A)
+                        .fillMaxWidth()
+                        .padding(top = 18.dp, bottom = 2.dp, start = 20.dp),
+                    color = Color(0xFF000000)
                 )
-                LazyColumn {
-                    itemsIndexed(date) { index, item ->
-                        if (index % 2 == 0) {
-                            Text(text = item)
+
+                Text(
+                    text = choosenDate,
+                    style = TextStyle(
+                        fontFamily = MontserratFontFamily,
+                        fontWeight = FontWeight.Black,
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Start
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 5.dp, bottom = 18.dp, start = 20.dp),
+                    color = Color(0xFF000000)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .background(Color.White)
+                        .padding(top = 10.dp)
+                        .height(210.dp)
+                ) {
+                    val coroutineScope = rememberCoroutineScope()
+                    val state = rememberLazyListState()
+                    val fullyVisibleIndices: List<Int> by remember {
+                        derivedStateOf {
+                            val layoutInfo = state.layoutInfo
+                            val visibleItemsInfo = layoutInfo.visibleItemsInfo
+                            if (visibleItemsInfo.isEmpty()) {
+                                emptyList()
+                            } else {
+                                val fullyVisibleItemsInfo = visibleItemsInfo.toMutableList()
+
+                                val lastItem = fullyVisibleItemsInfo.last()
+
+                                val viewportHeight = layoutInfo.viewportEndOffset + layoutInfo.viewportStartOffset
+
+                                if (lastItem.offset + lastItem.size > viewportHeight) {
+                                    fullyVisibleItemsInfo.removeLast()
+                                }
+
+                                val firstItemIfLeft = fullyVisibleItemsInfo.firstOrNull()
+                                if (firstItemIfLeft != null && firstItemIfLeft.offset < layoutInfo.viewportStartOffset) {
+                                    fullyVisibleItemsInfo.removeFirst()
+                                }
+
+                                fullyVisibleItemsInfo.map { it.index }
+                            }
+                        }
+                    }
+                    var textSize = 20.sp
+                    var padding = 10.dp
+                    var handlePadding = 10.dp
+                    var dateFocused by remember { mutableStateOf(false) }
+                    var monthFocused by remember { mutableStateOf(false) }
+                    var yearFocused by remember { mutableStateOf(false) }
+                    val dateScrollConnection = remember {
+                        object : NestedScrollConnection {
+                            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                                val delta = available.y
+//                                if (fullyVisibleIndices.size == 3) {
+//                                    choosenDate = fullyVisibleIndices.get(2).toString()
+//                                }
+//                                else if (fullyVisibleIndices.size == 4 && delta > 0) {
+//                                    choosenDate = fullyVisibleIndices.get(3).toString()
+//                                }
+//                                else if (fullyVisibleIndices.size == 4 && delta > 0) {
+//                                    choosenDate = fullyVisibleIndices.get(2).toString()
+//                                }
+//                                else if (fullyVisibleIndices.size == 5 && delta > 0) {
+//                                    choosenDate = fullyVisibleIndices.get(3).toString()
+//                                }
+
+//                                choosenDate = state.firstVisibleItemIndex.toString()
+                                if (state.firstVisibleItemScrollOffset > 50 && delta > 0) {
+                                    choosenDate = state.firstVisibleItemScrollOffset.toString() +
+                                            " = index = "+(state.firstVisibleItemIndex+3).toString()+
+                                            " = isiList = "+fullyVisibleIndices.get(3).toString()
+                                    coroutineScope.launch {
+                                        state.animateScrollToItem(state.firstVisibleItemIndex+3)
+                                    }
+                                }
+                                else if (state.firstVisibleItemScrollOffset > 50 && delta < 0) {
+                                    choosenDate = state.firstVisibleItemScrollOffset.toString() +
+                                            " = index = "+(state.firstVisibleItemIndex+4).toString()+
+                                            " = isiList = "+fullyVisibleIndices.get(3).toString()
+                                    coroutineScope.launch {
+                                        state.animateScrollToItem(state.firstVisibleItemIndex+4)
+                                    }
+                                }
+//                                else {
+//                                    choosenDate = state.firstVisibleItemScrollOffset.toString() +
+//                                            " = index = "+(state.firstVisibleItemIndex+3).toString()+
+//                                            " = delta = "+delta
+//                                }
+//                                choosenDate = delta.toString() // atas minus, bawah plus
+                                // called when you scroll the content
+                                dateFocused = true
+                                monthFocused = false
+                                yearFocused = false
+                                return Offset.Zero
+                            }
+                        }
+                    }
+                    val monthScrollConnection = remember {
+                        object : NestedScrollConnection {
+                            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                                val delta = available.y
+                                // called when you scroll the content
+                                dateFocused = false
+                                monthFocused = true
+                                yearFocused = false
+                                return Offset.Zero
+                            }
+                        }
+                    }
+                    val yearScrollConnection = remember {
+                        object : NestedScrollConnection {
+                            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                                val delta = available.y
+                                // called when you scroll the content
+                                dateFocused = false
+                                monthFocused = false
+                                yearFocused = true
+                                return Offset.Zero
+                            }
+                        }
+                    }
+
+                    val stopFling = object : FlingBehavior {
+                        override suspend fun ScrollScope.performFling(
+                            initialVelocity: Float
+                        ): Float {
+                            val adjustedVelocity = initialVelocity * 0.1f
+                            return 0f
+                        }
+                    }
+
+                    LazyColumn (
+                        modifier = Modifier
+                            .weight(0.3f)
+                            .nestedScroll(dateScrollConnection),
+                        state = state,
+                        flingBehavior = stopFling
+                    ) {
+                        itemsIndexed(date) { index, item ->
+                            val isVisible by remember(index) {
+                                derivedStateOf {
+                                    fullyVisibleIndices.contains(index)
+                                }
+                            }
+
+                            val findMiddleItem by remember(index) {
+                                derivedStateOf {
+                                    val layoutInfo = state.layoutInfo
+                                    val visibleItemInfo = layoutInfo.visibleItemsInfo
+                                    val itemInfo = visibleItemInfo.firstOrNull { it.index == index }
+
+                                    itemInfo?.let {
+                                        val delta = it.size/2
+                                        val center = state.layoutInfo.viewportEndOffset / 2
+                                        val childCenter = it.offset + it.size / 2
+                                        val target = childCenter - center
+                                        if (target in -delta..delta) return@derivedStateOf index
+                                    }
+                                }
+                            }
+
+                            Text(
+                                text = item,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(if (index == findMiddleItem) Color.Green else Color.Transparent)
+                                    .padding(end = handlePadding, top = padding, bottom = padding),
+                                color = handleColor(dateFocused),
+                                style = TextStyle(
+                                    fontFamily = MontserratFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = textSize,
+                                    lineHeight = 24.sp,
+                                    letterSpacing = 0.15.sp,
+                                    textAlign = TextAlign.End
+                                )
+                            )
+                        }
+                    }
+
+                    LazyColumn (
+                        modifier = Modifier
+                            .weight(0.4f)
+                            .nestedScroll(monthScrollConnection)
+                    ) {
+                        itemsIndexed(month) { index, item ->
+                            Text(
+                                text = item,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = padding, bottom = padding),
+                                color = handleColor(monthFocused),
+                                style = TextStyle(
+                                    fontFamily = MontserratFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = textSize,
+                                    lineHeight = 24.sp,
+                                    letterSpacing = 0.15.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            )
+                        }
+                    }
+
+                    LazyColumn (
+                        modifier = Modifier
+                            .weight(0.3f)
+                            .nestedScroll(yearScrollConnection)
+                    ) {
+                        itemsIndexed(year) { index, item ->
+                            Text(
+                                text = item,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = handlePadding, top = padding, bottom = padding),
+                                color = handleColor(yearFocused),
+                                style = TextStyle(
+                                    fontFamily = MontserratFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = textSize,
+                                    lineHeight = 24.sp,
+                                    letterSpacing = 0.15.sp,
+                                    textAlign = TextAlign.Start
+                                )
+                            )
                         }
                     }
                 }
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .background(
+                            Color.White,
+                            shape = RoundedCornerShape(bottomEnd = 15.dp, bottomStart = 15.dp)
+                        )
+                        .fillMaxHeight()
+                ) {
+                    Text(
+                        text = "Konfirmasi",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.CenterVertically),
+                        color = Color(0xFFEC701D),
+                        style = TextStyle(
+                            fontFamily = MontserratFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
             }
         }
+    }
+}
+
+fun handleColor(isFocus: Boolean): Color {
+    return if (isFocus) {
+        Color(0xFF21ABA1)
+    }
+    else {
+        Color(0xFF000000)
     }
 }
 
