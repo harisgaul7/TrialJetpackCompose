@@ -54,9 +54,9 @@ import java.util.Date
 var dateText = "01"
 var monthText = "Januari"
 var yearText = "2023"
-@SuppressLint("CoroutineCreationDuringComposition")
+@SuppressLint("CoroutineCreationDuringComposition", "SimpleDateFormat")
 @Composable
-fun DatePickerDialog(onDismiss: () -> Unit) {
+fun datePickerDialog(onDismiss: () -> Unit) : String {
     Dialog(
         onDismissRequest = {
             onDismiss()
@@ -73,7 +73,21 @@ fun DatePickerDialog(onDismiss: () -> Unit) {
                 .fillMaxHeight(0.65f)
                 .background(Color(0xFFEAF1F1), shape = RoundedCornerShape(15.dp))
         ) {
-            val date = listOf(
+            val date28 = listOf(
+                "","","1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
+                "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "", ""
+            )
+            val date29 = listOf(
+                "","","1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
+                "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29",
+                "", ""
+            )
+            val date30 = listOf(
+                "","","1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
+                "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29",
+                "30", "", ""
+            )
+            val date31 = listOf(
                 "","","1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
                 "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29",
                 "30", "31", "", ""
@@ -159,7 +173,9 @@ fun DatePickerDialog(onDismiss: () -> Unit) {
                             .height(180.dp)
                     ) {
 
-                        var padding = 10.dp
+                        val padding = 10.dp
+
+                        var date: List<String> by remember { mutableStateOf(date31) }
 
                         var dateFocused by remember { mutableStateOf(false) }
                         var monthFocused by remember { mutableStateOf(false) }
@@ -199,6 +215,7 @@ fun DatePickerDialog(onDismiss: () -> Unit) {
                                     available: Offset,
                                     source: NestedScrollSource
                                 ): Offset {
+                                    date = getDateFromMonth(monthText, date28, date29, date30, date31, yearText)
                                     choosenDate = "$dateText $monthText $yearText"
                                     return super.onPostScroll(consumed, available, source)
                                 }
@@ -219,6 +236,7 @@ fun DatePickerDialog(onDismiss: () -> Unit) {
                                     available: Offset,
                                     source: NestedScrollSource
                                 ): Offset {
+                                    date = getDateFromMonth(monthText, date28, date29, date30, date31, yearText)
                                     choosenDate = "$dateText $monthText $yearText"
                                     return super.onPostScroll(consumed, available, source)
                                 }
@@ -313,6 +331,25 @@ fun DatePickerDialog(onDismiss: () -> Unit) {
                 }
             }
         }
+    }
+    return "$dateText $monthText $yearText"
+}
+
+fun getDateFromMonth(month: String, date28: List<String>, date29: List<String>, date30: List<String>,
+                     date31: List<String>, yearText: String): List<String> {
+    return when(month) {
+        "Januari" -> date31
+        "Februari" -> if (yearText.toInt()%4 == 0) date29 else date28
+        "Maret" -> date31
+        "April" -> date30
+        "Mei" -> date31
+        "Juni" -> date30
+        "Juli" -> date31
+        "Agustus" -> date31
+        "September" -> date30
+        "Oktober" -> date31
+        "November" -> date30
+        else -> date31
     }
 }
 

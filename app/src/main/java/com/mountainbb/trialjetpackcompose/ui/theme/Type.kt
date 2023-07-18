@@ -15,6 +15,29 @@ val MontserratFontFamily = FontFamily(
         Font(R.font.montserrat_semibold, FontWeight.SemiBold)
     )
 )
+val OpensansFontBold = FontFamily(
+    listOf(
+        Font(R.font.opensans_bold, FontWeight.Bold)
+    )
+)
+
+val OpensansFontFamily = FontFamily(
+    listOf(
+        Font(R.font.opensans_regular),
+        Font(R.font.opensans_bold, FontWeight.Bold),
+        Font(R.font.opensans_bolditalic),
+        Font(R.font.opensans_condbold),
+        Font(R.font.opensans_condlight),
+        Font(R.font.opensans_condlightitalic),
+        Font(R.font.opensans_extrabold),
+        Font(R.font.opensans_extrabolditalic),
+        Font(R.font.opensans_light),
+        Font(R.font.opensans_lightitalic),
+        Font(R.font.opensans_italic),
+        Font(R.font.opensans_semibold),
+        Font(R.font.opensans_semibolditalic),
+    )
+)
 
 
 val MontserratFontSemiBold = FontFamily(
