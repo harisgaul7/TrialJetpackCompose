@@ -42,6 +42,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.mountainbb.trialjetpackcompose.R
 import com.mountainbb.trialjetpackcompose.component.ratingBar
 import com.mountainbb.trialjetpackcompose.ui.theme.MontserratFontFamily
+import com.mountainbb.trialjetpackcompose.util.clickableWithoutRipple
 
 @Composable
 fun RatingDialog(
@@ -54,9 +55,6 @@ fun RatingDialog(
             dismissOnClickOutside = true
         )
     ) {
-        val interactionSource = remember {
-            MutableInteractionSource()
-        }
         var valueEdit = remember {
             mutableStateOf(TextFieldValue(""))
         }
@@ -208,10 +206,7 @@ fun RatingDialog(
                 modifier = Modifier
                     .padding(top = 10.dp, bottom = 20.dp)
                     .align(CenterHorizontally)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null
-                    ) {
+                    .clickableWithoutRipple {
                         onDismiss()
                     }
             )

@@ -1,15 +1,12 @@
 package com.mountainbb.trialjetpackcompose.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -18,10 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,14 +34,13 @@ import com.mountainbb.trialjetpackcompose.ui.theme.TrialJetpackComposeTheme
 fun TransferTypeCard(cardModifier: Modifier = Modifier, titleText: String, descText: String, isSelected: Boolean = false) {
     Card(
         modifier = cardModifier
-            .height(100.dp)
+            .height(85.dp)
             .border(
                 1.dp,
                 if (isSelected) Color(0xFF83C048) else Color.Transparent,
                 shape = RoundedCornerShape(8.dp)
             )
-            .shadow(4.dp, shape = RoundedCornerShape(8.dp))
-            .paint(painterResource(id = R.drawable.visibility_off)),
+            .shadow(4.dp, shape = RoundedCornerShape(8.dp)),
         colors = CardDefaults.cardColors(Color.White),
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -69,19 +63,20 @@ fun TransferTypeCard(cardModifier: Modifier = Modifier, titleText: String, descT
                     .fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.size(10.dp))
 
             Text(
                 text = descText,
                 style = TextStyle(
                     fontFamily = OpensansFontFamily,
                     fontWeight = FontWeight.Light,
-                    fontSize = 10.sp,
+                    fontSize = 8.sp,
                     textAlign = TextAlign.Center,
                     color = Color(0xFF333333)
                 ),
                 modifier = Modifier
-                    .fillMaxWidth(0.9f)
+                    .fillMaxWidth()
+                    .padding(start = 13.dp, end = 13.dp)
                     .align(Alignment.CenterHorizontally)
             )
 

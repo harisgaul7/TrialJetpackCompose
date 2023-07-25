@@ -19,7 +19,7 @@ class SplashActivity : ComponentActivity() {
             }
         }
         lifecycleScope.launch {
-            delay(2000)
+            delay(500)
             val intent = Intent(this@SplashActivity, MainActivity::class.java)
             startActivity(intent)
             finish()

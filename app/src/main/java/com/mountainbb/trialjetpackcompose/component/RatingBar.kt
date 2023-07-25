@@ -21,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mountainbb.trialjetpackcompose.R
+import com.mountainbb.trialjetpackcompose.util.clickableWithoutRipple
 
 @Composable
 fun ratingBar(modifier: Modifier): Int {
@@ -32,9 +33,6 @@ fun ratingBar(modifier: Modifier): Int {
     var ratingValue by remember {
         mutableStateOf(0)
     }
-    val interactionSource = remember {
-        MutableInteractionSource()
-    }
     Row(
         modifier = modifier
             .width(200.dp)
@@ -43,10 +41,7 @@ fun ratingBar(modifier: Modifier): Int {
         Image(
             modifier = Modifier
                 .size(40.dp)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) {
+                .clickableWithoutRipple {
                     ratingImage1 = R.drawable.stars_filled
                     ratingImage2 = R.drawable.stars_unfilled
                     ratingImage3 = R.drawable.stars_unfilled
@@ -61,10 +56,7 @@ fun ratingBar(modifier: Modifier): Int {
         Image(
             modifier = Modifier
                 .size(40.dp)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) {
+                .clickableWithoutRipple {
                     ratingImage1 = R.drawable.stars_filled
                     ratingImage2 = R.drawable.stars_filled
                     ratingImage3 = R.drawable.stars_unfilled
@@ -79,10 +71,7 @@ fun ratingBar(modifier: Modifier): Int {
         Image(
             modifier = Modifier
                 .size(40.dp)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) {
+                .clickableWithoutRipple {
                     ratingImage1 = R.drawable.stars_filled
                     ratingImage2 = R.drawable.stars_filled
                     ratingImage3 = R.drawable.stars_filled
@@ -97,10 +86,7 @@ fun ratingBar(modifier: Modifier): Int {
         Image(
             modifier = Modifier
                 .size(40.dp)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) {
+                .clickableWithoutRipple {
                     ratingImage1 = R.drawable.stars_filled
                     ratingImage2 = R.drawable.stars_filled
                     ratingImage3 = R.drawable.stars_filled
@@ -115,10 +101,7 @@ fun ratingBar(modifier: Modifier): Int {
         Image(
             modifier = Modifier
                 .size(40.dp)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) {
+                .clickableWithoutRipple {
                     ratingImage1 = R.drawable.stars_filled
                     ratingImage2 = R.drawable.stars_filled
                     ratingImage3 = R.drawable.stars_filled

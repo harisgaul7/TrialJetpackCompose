@@ -6,7 +6,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -59,6 +58,7 @@ import com.mountainbb.trialjetpackcompose.rating.RatingDialog
 import com.mountainbb.trialjetpackcompose.ui.theme.MontserratFontFamily
 import com.mountainbb.trialjetpackcompose.ui.theme.SeptimusFontFamily
 import com.mountainbb.trialjetpackcompose.ui.theme.TrialJetpackComposeTheme
+import com.mountainbb.trialjetpackcompose.util.clickableWithoutRipple
 import com.mountainbb.trialjetpackcompose.util.supportWideScreen
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
@@ -88,11 +88,6 @@ fun WelcomeScreen(
     }
     var ratingBarStatus by remember {
         mutableStateOf(false)
-    }
-
-    // to disable ripple effect when button info is clicked
-    val interactionSource = remember {
-        MutableInteractionSource()
     }
     // to make drag and drop chat us
     var offsetX by remember { mutableStateOf(0f) }
@@ -128,10 +123,7 @@ fun WelcomeScreen(
                     contentDescription = null,
                     modifier = Modifier
                         .width(20.dp)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null
-                        ) {
+                        .clickableWithoutRipple {
                             cardInfoVisibility++
                         }
                 )
