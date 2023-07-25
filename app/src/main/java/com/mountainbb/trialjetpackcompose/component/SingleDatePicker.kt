@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.mountainbb.trialjetpackcompose.R
 import com.mountainbb.trialjetpackcompose.ui.theme.MontserratFontFamily
 import kotlinx.coroutines.launch
