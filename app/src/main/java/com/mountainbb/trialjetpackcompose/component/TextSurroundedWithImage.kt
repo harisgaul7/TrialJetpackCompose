@@ -1,5 +1,6 @@
 package com.mountainbb.trialjetpackcompose.component
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -33,22 +35,18 @@ import androidx.compose.ui.unit.sp
 import com.mountainbb.trialjetpackcompose.R
 import com.mountainbb.trialjetpackcompose.ui.theme.OpensansFontFamily
 import com.mountainbb.trialjetpackcompose.ui.theme.TrialJetpackComposeTheme
-import com.mountainbb.trialjetpackcompose.util.clickableWithoutRipple
 
 
+@SuppressLint("InvalidColorHexValue")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextSurroundedWithImage(
-    cardModifier: Modifier = Modifier, label: String = "", placeholder: String = "",
-    leftImage: Int = R.drawable.ic_bank, onBankClick: () -> Unit = {},
-    rightImage: Int = R.drawable.ic_drop_down_maroon
+    modifier: Modifier = Modifier, label: String = "", placeholder: String = "",
+    leftImage: Int = R.drawable.ic_bank, rightImage: Int = R.drawable.ic_drop_down_maroon
 ) {
-    Box(modifier = cardModifier
+    Box(modifier = modifier
         .fillMaxWidth()
         .height(76.dp)
-        .clickableWithoutRipple {
-            onBankClick
-        }
     ) {
         Card(
             modifier = Modifier
@@ -66,9 +64,9 @@ fun TextSurroundedWithImage(
                 Spacer(modifier = Modifier.size(18.dp))
 
                 Image(
-                    imageVector = ImageVector.vectorResource(id = leftImage),
+                    painter = painterResource(id = leftImage),
                     contentDescription = null,
-                    contentScale = ContentScale.FillBounds,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .width(30.dp)
                         .height(30.dp)

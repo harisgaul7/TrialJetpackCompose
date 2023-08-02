@@ -418,7 +418,7 @@ fun BottomSheetLayout() {
 
                                     TextSurroundedWithImage(label = stringResource(id = R.string.title_bank_name),
                                         placeholder = stringResource(id = R.string.title_select_bank),
-                                        cardModifier = Modifier.constrainAs(bankName) {
+                                        modifier = Modifier.constrainAs(bankName) {
                                             top.linkTo(recipAcct.bottom)
                                         })
 

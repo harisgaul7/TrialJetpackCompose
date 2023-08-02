@@ -26,6 +26,8 @@
     <string name="title_other_bank">Bank Lain (Rupiah)</string>
     <string name="title_transfer_from">Transfer dari</string>
     <string name="title_transfer_type">Jenis Transfer</string>
+    <string name="title_select_purpose">Pilih tujuan</string>
+    <string name="title_select_currency">Pilih mata uang</string>
     <string name="title_recipient_type">Jenis Penerima</string>
     <string name="title_account_number">Nomor rekening</string>
     <string name="title_transfer_amount">Nominal Transfer</string>
@@ -35,6 +37,7 @@
     <string name="title_default_purpose_transfer">02 - Transfer</string>
     <string name="title_bank_name">Nama Bank</string>
     <string name="title_select_bank">Pilih bank tujuan</string>
+    <string name="title_placeholder_search_bank">Cari nama bank atau inisial</string>
     <string name="title_placeholder_type_number">Ketik atau pilih nomor rekening</string>
     <string name="title_placeholder_type_alias">Ketik atau pilih alias</string>
     <string name="title_detail_input_alias">Pastikan format yang dimasukkan sama dengan yang alias yang didaftarkan.</string>

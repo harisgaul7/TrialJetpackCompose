@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,14 +26,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -47,7 +51,7 @@ import com.mountainbb.trialjetpackcompose.ui.theme.TrialJetpackComposeTheme
 import com.mountainbb.trialjetpackcompose.util.clickableWithoutRipple
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun TextFieldRightImage(
     cardModifier: Modifier = Modifier, textValue: String = "", label: String = "",
@@ -56,8 +60,10 @@ fun TextFieldRightImage(
     onValueChange: (String) -> Unit = {}
 ) {
     var text by rememberSaveable { mutableStateOf(textValue) }
+
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     var isClearVisible by remember {
         mutableStateOf(false)
@@ -99,7 +105,10 @@ fun TextFieldRightImage(
                     },
                     modifier = Modifier
                         .weight(1f)
-                        .padding(end = 4.dp),
+                        .padding(end = 4.dp)
+                        .onFocusChanged {
+                            isClearVisible = it.isFocused && text != ""
+                        },
                     textStyle = TextStyle(
                         fontFamily = OpensansFontFamily,
                         fontWeight = FontWeight.Normal,
@@ -119,7 +128,14 @@ fun TextFieldRightImage(
                                 .focusRequester(focusRequester)
                         )
                         it()
-                    }
+                    },
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+                            isClearVisible = false
+                        }
+                    )
                 )
 
                 AnimatedVisibility(visible = isClearVisible) {

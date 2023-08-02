@@ -49,12 +49,21 @@ android {
 dependencies {
 
     implementation 'com.google.android.material:material:1.9.0'
+    implementation files('libs/oceanacustomerwebvoicevideo')
     debugImplementation("androidx.compose.ui:ui-tooling:1.4.2")
     implementation("androidx.compose.ui:ui-tooling-preview:1.4.2")
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
     implementation 'androidx.activity:activity-compose:1.3.1'
     implementation 'androidx.compose.material3:material3:1.0.0-alpha11'
+
+    //vbo
+//    implementation files('libs/libwebrtc-1.0.26885')
+    implementation files('libs/oceanacustomerwebvoicevideo.aar')
+//    implementation fileTree(include: 'libwebrtc-1.0.26885', dir: 'libs')
+//    implementation fileTree(include: 'oceanacustomerwebvoicevideo', dir: 'libs')
+//    implementation(name: 'oceanacustomerwebvoicevideo', ext: 'aar')
+//    implementation "io.netty:netty-all:4.1.17.Final"
 
 
     def compose_ui_version = '1.3.1'

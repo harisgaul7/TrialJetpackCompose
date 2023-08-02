@@ -2,6 +2,7 @@ package com.mountainbb.trialjetpackcompose.splash
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +19,7 @@ class SplashActivity : ComponentActivity() {
                 SplashScreen()
             }
         }
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
         lifecycleScope.launch {
             delay(500)
             val intent = Intent(this@SplashActivity, MainActivity::class.java)
